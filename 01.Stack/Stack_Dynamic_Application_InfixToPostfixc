@@ -1,0 +1,168 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<ctype.h>
+#include<limits.h>
+#include<string.h>
+
+struct Stack{
+	int top;
+	int capacity;
+	char *array;
+};
+
+struct Stack *createStack(int capacity){
+	struct Stack *S = (struct Stack *)malloc(sizeof(struct Stack));
+	if(!S)
+	{
+		printf("\12Error in Stack Creation...\12");
+		return NULL;
+	}
+	S->top=-1;
+	S->capacity=capacity;
+	S->array=(char *)malloc(S->capacity*(sizeof(char)));
+	if(!S->array)
+	{
+		printf("\12Error in Stack Array Creation...\12");
+		return NULL;
+	}
+	return S;
+}
+
+int isEmpty(struct Stack *S)
+{
+	return (S->top==-1);
+}
+
+int isFull(struct Stack *S)
+{
+	return (S->top==(S->capacity-1));
+}
+
+void push(struct Stack *S,char data)
+{
+	if(isFull(S))
+	{
+		printf("\12Stack is Full!!\12");
+	}
+	else
+	{
+		S->array[++S->top]=data;
+	}
+}
+
+char pop(struct Stack *S)
+{
+	if(isEmpty(S))
+	{
+		printf("\12Stack is Empty!!\12");
+		return '\0';
+	}
+	else
+	{
+		return (S->array[S->top--]);
+	}
+}
+
+char peek(struct Stack *S)
+{
+	if(isEmpty(S))
+	{
+		printf("\12Stack is Empty!!\12");
+		return '\0';
+	}
+	else
+	{
+		return (S->array[S->top]);
+	}
+}
+
+void display(struct Stack *S)
+{
+	if(isEmpty(S))
+	{
+		printf("\12Stack is Empty!!\12");
+	}
+	else
+	{
+		printf("\12Stack elements are:\t");
+		int i;
+		for(i=0;i<=S->top;i++)
+		{
+			printf("%c\t",S->array[i]);
+		}
+		printf("\12");
+	}
+}
+
+void deleteStack(struct Stack *S)
+{
+	if(S)
+	{
+		if(S->array)
+		{
+			free(S->array);	
+		}
+		free(S);	
+	}
+}
+
+int priority(char a)
+{
+	if(a=='*' || a=='/')
+	{
+		return 2;
+	}
+	if(a == '+' || a == '-')
+	{
+		return 1;
+	}
+	if (a=='(')
+	{
+		return 0;
+	}
+}
+
+void infix_to_postfix(char exp[])
+{
+	char *e,x;
+	struct Stack *stk = createStack(10);
+	e=exp;
+	while(*e!='\0')
+	{
+		if(isalnum(*e))
+		{
+			printf("%c",*e);
+		}
+		else if (*e=='(')
+		{
+			push(stk,*e);
+		}
+		else if( *e ==')')
+		{
+			while((x=pop(stk))!='(')
+			{
+				printf("%c",x);
+			}
+		}
+		else
+		{
+			while(priority(peek(stk))>=priority(*e))
+			{
+				printf("%c",pop(stk));
+			}
+			push(stk,*e);
+		}
+		e++;
+	}
+	while(!isEmpty(stk))
+	{
+		printf("%c",pop(stk));
+	}
+}
+
+int main()
+{
+	printf("\12Conversion of Infix To Postfix of  (a+(b*(d+2))) is :\t");
+	infix_to_postfix("(a+(b*(d+2)))");
+	return 0;
+}
